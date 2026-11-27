@@ -69,10 +69,17 @@ def startgame():
             text = selection[1]
             source_of_text = selection[0]
 
-            print("Type the following paragraph as fast as you can!")
+            print("Type the following paragraph as fast as you can!" )
             print(text)
             start_time = time.perf_counter()
-            entry = input("Type here: ")
+            print("Type here (press enter twice to finish):\n")
+            entry = []
+            while True:
+                line = input()
+                if line == '':
+                    break
+                entry.append(line)
+            entry = '\n'.join(entry)
             end_time = time.perf_counter()
             total_time = round(end_time - start_time, 3)
 
@@ -86,7 +93,8 @@ def startgame():
             total_words_typed = len(entry.split())
             total_source_words = len(text.split())
 
-            accuracy = round(100 * (1 - (errors/total_source_words)),2)
+            accuracy = round((1 - (errors/total_source_words)),2)
+            percent_accuracy = 100*accuracy
             wpm = round((total_words_typed/total_time)*60,2)
 
             multi = math.sin(1.57*accuracy)**2
@@ -95,14 +103,14 @@ def startgame():
             print(f'''Good job! You just typed a quote from {source_of_text}
             Your time was: {total_time} seconds
             You typed {wpm} words per minute on average
-            Your accuracy is: {accuracy}%
+            Your accuracy is: {percent_accuracy}%
             Your weighted words per minute is: {weighted_wpm}
             You got {errors} words wrong!''')
 
             mycursor.execute(f'''INSERT INTO ALl_ATTEMPTS
              (DATE_TIME,NAME,WORDS_PER_MINUTE,ACCURACY,WEIGHTED_WPM) 
              VALUES
-             ("{date}","{playername}",{wpm},{accuracy},{weighted_wpm} ) ''')
+             ("{date}","{playername}",{wpm},{percent_accuracy},{weighted_wpm} ) ''')
             mydb.commit()
 
             if terminate():
@@ -145,9 +153,6 @@ def startgame():
 
         else:
             print("please enter a valid input")
-
-startgame()
-
 
 
 
